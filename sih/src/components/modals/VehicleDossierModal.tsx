@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Vehicle } from "@/types";
+import { VahanRecord } from "@/types/api";
+import { verifyRegistration } from "@/services/vahanService";
 import {
   Truck,
   MapPin,
@@ -44,28 +46,32 @@ export default function VehicleDossierModal({
 }: VehicleDossierModalProps) {
   const [copiedCoords, setCopiedCoords] = useState(false);
   const [activeTab, setActiveTab] = useState<"location" | "telemetry" | "driver_cargo" | "ais140">("location");
-  const [vahanData, setVahanData] = useState<any>(null);
+  const [vahanData, setVahanData] = useState<VahanRecord | null>(null);
   const [isVerifyingVahan, setIsVerifyingVahan] = useState(false);
+  const [isVahanLive, setIsVahanLive] = useState(false);
 
   useEffect(() => {
-    if (isOpen && vehicle) {
-      const targetPlate = vehicle.plateNumber || vehicle.id;
-      setIsVerifyingVahan(true);
-      fetch(`/api/vahan/verify/${encodeURIComponent(String(targetPlate).replace(/\s+/g, "-"))}`)
-        .then((res) => {
-          if (res.ok) return res.json();
-          return null;
-        })
-        .then((data) => {
-          if (data?.record) setVahanData(data.record);
-        })
-        .catch(() => {
-          // Graceful offline/fallback handling
-        })
-        .finally(() => {
-          setIsVerifyingVahan(false);
-        });
-    }
+    if (!isOpen || !vehicle) return;
+
+    let cancelled = false;
+    const targetPlate = vehicle.plateNumber || vehicle.id;
+
+    setIsVerifyingVahan(true);
+    setVahanData(null);
+
+    verifyRegistration(String(targetPlate))
+      .then((result) => {
+        if (cancelled) return;
+        setVahanData(result.verification.record);
+        setIsVahanLive(result.live);
+      })
+      .finally(() => {
+        if (!cancelled) setIsVerifyingVahan(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [isOpen, vehicle]);
 
   useEffect(() => {
@@ -377,8 +383,20 @@ export default function VehicleDossierModal({
                     <ShieldCheck size={16} />
                     <span>MoRTH VAHAN 4.0 Central National Registry</span>
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono font-bold">
-                    ACTIVE RC
+                  <span
+                    className={`text-[10px] px-2 py-0.5 rounded border font-mono font-bold ${
+                      isVerifyingVahan
+                        ? "bg-amber-950 text-amber-300 border-amber-800"
+                        : isVahanLive
+                        ? "bg-emerald-950 text-emerald-300 border-emerald-800"
+                        : "bg-slate-900 text-slate-300 border-slate-700"
+                    }`}
+                  >
+                    {isVerifyingVahan
+                      ? "VERIFYING…"
+                      : isVahanLive
+                      ? "ACTIVE RC • LIVE"
+                      : "ACTIVE RC • OFFLINE"}
                   </span>
                 </div>
                 <p className="text-slate-300 text-xs leading-relaxed">

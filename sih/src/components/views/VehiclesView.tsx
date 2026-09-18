@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
 import { Vehicle } from "@/types";
+import { getFleet } from "@/services/fleetService";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { RiskIndicator } from "@/components/ui/RiskIndicator";
 import MapContainer from "@/components/map/MapContainer";
@@ -34,6 +35,21 @@ export function VehiclesView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isDossierOpen, setIsDossierOpen] = useState(false);
+  const [fleetRegistry, setFleetRegistry] = useState<{ total: number; live: boolean } | null>(null);
+
+  // Registry telemetry: live AIS-140 registry when the engine is up, offline convoy set otherwise.
+  useEffect(() => {
+    let cancelled = false;
+
+    getFleet().then((fleet) => {
+      if (cancelled) return;
+      setFleetRegistry({ total: fleet.vehicles.length, live: fleet.live });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredVehicles = vehicles.filter((v) => {
     const matchesSearch =
@@ -69,10 +85,20 @@ export function VehiclesView() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 text-[11px] text-slate-400 px-2.5 py-1 rounded bg-slate-900 border border-slate-800">
-            <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-            <span>Simulated GPS Broadcast: </span>
-            <span className="text-emerald-400 font-bold">146 Active Convoys</span>
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-400 px-2.5 py-1 rounded bg-slate-900 border border-slate-800">
+            <Radio
+              className={`w-3.5 h-3.5 ${
+                fleetRegistry?.live ? "text-emerald-400 animate-pulse" : "text-amber-400"
+              }`}
+            />
+            <span>{fleetRegistry?.live ? "AIS-140 Live Registry:" : "Offline Convoy Registry:"}</span>
+            <span
+              className={`font-bold ${
+                fleetRegistry?.live ? "text-emerald-400" : "text-amber-400"
+              }`}
+            >
+              {fleetRegistry ? `${fleetRegistry.total} Active Convoys` : "Synchronising…"}
+            </span>
           </div>
         </div>
       </div>

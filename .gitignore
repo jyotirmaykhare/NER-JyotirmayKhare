@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Logs
+*.log
+*.err.log
+*.out.log
+
+# Local env (templates are safe to commit)
+.env.local
+.env

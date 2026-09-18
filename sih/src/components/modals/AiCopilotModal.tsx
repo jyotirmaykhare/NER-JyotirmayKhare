@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { COPILOT_PRESET_QUERIES, CopilotQuery } from "@/data/aiCopilot";
+import { sendCopilotMessage } from "@/services/chatService";
 import {
   Bot,
   Sparkles,
@@ -21,6 +22,10 @@ interface ChatMessage {
   text: string;
   actionQuery?: CopilotQuery;
   timestamp: string;
+  /** Provider that produced the answer (FastAPI engine vs offline knowledge base). */
+  sourceLabel?: string;
+  /** True when the answer came from the live API layer. */
+  live?: boolean;
 }
 
 export function AiCopilotModal() {
@@ -59,53 +64,18 @@ export function AiCopilotModal() {
     setMessages((prev) => [...prev, userMsg]);
     setInputQuery("");
 
-    let answerText = "";
-    let matched = preset;
-
-    // First attempt query to internal /api/chat endpoint
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: queryText }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.answer) {
-          answerText = data.answer;
-        }
-      }
-    } catch {
-      // Local fallback
-    }
-
-    // Fallback to presets if needed
-    if (!answerText) {
-      if (!matched) {
-        const lower = queryText.toLowerCase();
-        matched = COPILOT_PRESET_QUERIES.find(
-          (q) =>
-            lower.includes(q.shortLabel.toLowerCase()) ||
-            q.question.toLowerCase().includes(lower) ||
-            (lower.includes("risk") && q.id === "query-1") ||
-            (lower.includes("medic") && q.id === "query-2") ||
-            (lower.includes("route b") && q.id === "query-3") ||
-            (lower.includes("delay") && q.id === "query-4") ||
-            (lower.includes("road") && q.id === "query-5")
-        );
-      }
-
-      answerText = matched
-        ? matched.answer
-        : `Analyzing current regional telemetry for "${queryText}"...\n\nAll 8 North Eastern states report 78% average road accessibility. Highest caution is advised along the NH-13 Trans-Arunachal corridor (West Siang sector) and the North Bank NH-15. Would you like me to highlight the active landslide zones?`;
-    }
+    // Answer resolution is delegated to the API layer service: the FastAPI AI
+    // engine is preferred, the curated offline knowledge base is the fallback.
+    const reply = await sendCopilotMessage(queryText, { preset });
 
     const aiMsg: ChatMessage = {
       id: `ai-${msgIdRef.current++}`,
       sender: "ai",
-      text: answerText,
-      actionQuery: matched,
-      timestamp: "Just now",
+      text: reply.answer,
+      actionQuery: reply.matchedPreset,
+      timestamp: reply.timestamp,
+      sourceLabel: reply.sourceLabel,
+      live: reply.live,
     };
 
     setMessages((prev) => [...prev, aiMsg]);
@@ -219,6 +189,20 @@ export function AiCopilotModal() {
               >
                 {/* Format markdown-like bold and bullet text simply */}
                 <div className="whitespace-pre-line">{m.text}</div>
+
+                {/* Provider trace: live FastAPI engine vs curated offline knowledge */}
+                {m.sender === "ai" && m.sourceLabel && (
+                  <div className="mt-2 pt-2 border-t border-slate-800 text-[10px] font-mono text-slate-500 flex items-center gap-1.5">
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        m.live ? "bg-emerald-400" : "bg-amber-400"
+                      }`}
+                    />
+                    <span>
+                      {m.live ? "LIVE ENGINE" : "OFFLINE KB"} • {m.sourceLabel}
+                    </span>
+                  </div>
+                )}
 
                 {/* Actionable Button if linked to a GIS action */}
                 {m.actionQuery && (

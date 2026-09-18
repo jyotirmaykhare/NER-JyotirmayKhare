@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { postBackendJson } from "@/lib/serverBackend";
+import type { ChatResponse } from "@/types/api";
 
-// Comprehensive NER Logistics Knowledge Base
+/**
+ * AI Logistics Copilot endpoint.
+ *
+ * Preferred path: the unified FastAPI AI engine (`sih/backend/chatbot.py`),
+ * which owns the full domain knowledge base, reasoning and Wikipedia fallback.
+ * Offline path: the curated NER knowledge base below, so the copilot keeps
+ * answering during network blackouts.
+ */
+
+const OFFLINE_HEADERS = { "X-NER-Source": "offline-fallback" };
+
+// Comprehensive NER Logistics Knowledge Base (offline fallback)
 const NER_KNOWLEDGE = [
   {
     keywords: ["sela", "tunnel", "nh-13", "pass", "arunachal"],
@@ -52,34 +65,61 @@ const NER_KNOWLEDGE = [
   }
 ];
 
+const timestampNow = () =>
+  new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const query = (body.message || "").toLowerCase().trim();
+    const message: string = typeof body.message === "string" ? body.message : "";
+    const query = message.toLowerCase().trim();
 
-    if (!query) {
-      return NextResponse.json({
-        answer: "Greetings. I am the NER Logistics Intelligence AI Copilot. You can ask me about regional highway corridors, Sela Tunnel accessibility, cold-chain standards, medical first aid, or road closures.",
-        source: "NER Logistics Intelligence",
-        suggestions: [
-          "What are the 8 states of North East India?",
-          "Status of Sela Tunnel on NH-13?",
-          "Cold chain guidelines for blood plasma?",
-          "Emergency protocol for hypothermia?",
-        ],
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    // 1. Preferred path: unified FastAPI AI engine (domain knowledge + reasoning).
+    if (message) {
+      const engineAnswer = await postBackendJson<ChatResponse>("/api/chat", {
+        message,
+        history: body.history ?? [],
+        language: body.language ?? "en",
+        context: body.context,
       });
+
+      if (engineAnswer?.answer) {
+        return NextResponse.json(engineAnswer, {
+          headers: { "X-NER-Source": "fastapi-engine" },
+        });
+      }
+    }
+
+    // 2. Offline path: curated NER knowledge base.
+    if (!query) {
+      return NextResponse.json(
+        {
+          answer: "Greetings. I am the NER Logistics Intelligence AI Copilot. You can ask me about regional highway corridors, Sela Tunnel accessibility, cold-chain standards, medical first aid, or road closures.",
+          source: "NER Logistics Intelligence",
+          suggestions: [
+            "What are the 8 states of North East India?",
+            "Status of Sela Tunnel on NH-13?",
+            "Cold chain guidelines for blood plasma?",
+            "Emergency protocol for hypothermia?",
+          ],
+          timestamp: timestampNow(),
+        },
+        { headers: OFFLINE_HEADERS }
+      );
     }
 
     // Match keywords against knowledge base
     for (const entry of NER_KNOWLEDGE) {
       if (entry.keywords.some((kw) => query.includes(kw))) {
-        return NextResponse.json({
-          answer: entry.answer,
-          source: entry.source,
-          suggestions: entry.suggestions,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        });
+        return NextResponse.json(
+          {
+            answer: entry.answer,
+            source: entry.source,
+            suggestions: entry.suggestions,
+            timestamp: timestampNow(),
+          },
+          { headers: OFFLINE_HEADERS }
+        );
       }
     }
 
@@ -87,15 +127,17 @@ export async function POST(req: NextRequest) {
     try {
       const mathClean = query.replace(/[^0-9+\-*/().]/g, "");
       if (mathClean && mathClean.length >= 3 && /[0-9]/.test(mathClean)) {
-        // Safe math evaluation with Function
         const calc = new Function(`return (${mathClean})`)();
         if (typeof calc === "number" && !isNaN(calc)) {
-          return NextResponse.json({
-            answer: `Calculation result: ${mathClean} = ${calc}`,
-            source: "NER Math Engine",
-            suggestions: ["Convert km to miles", "Fuel range calculation"],
-            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          });
+          return NextResponse.json(
+            {
+              answer: `Calculation result: ${mathClean} = ${calc}`,
+              source: "NER Math Engine",
+              suggestions: ["Convert km to miles", "Fuel range calculation"],
+              timestamp: timestampNow(),
+            },
+            { headers: OFFLINE_HEADERS }
+          );
         }
       }
     } catch {
@@ -103,22 +145,21 @@ export async function POST(req: NextRequest) {
     }
 
     // General operational guidance fallback
-    return NextResponse.json({
-      answer: `Query noted: "${body.message}". In the North Eastern Region, all transit decisions should account for terrain elevation and monsoon weather buffers. For critical convoy routing, consult the Routes tab or deploy an AI Blockage Detour.`,
-      source: "NER Command Center Intelligence",
-      suggestions: [
-        "Tell me about Sela Tunnel and NH-13",
-        "What is the Sonapur Tunnel status?",
-        "How to treat high-altitude AMS?",
-        "What is the LoRa mesh protocol?",
-      ],
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    });
-  } catch (error) {
     return NextResponse.json(
-      { error: "Internal chat processing error" },
-      { status: 500 }
+      {
+        answer: `Query noted: "${message}". In the North Eastern Region, all transit decisions should account for terrain elevation and monsoon weather buffers. For critical convoy routing, consult the Routes tab or deploy an AI Blockage Detour.`,
+        source: "NER Command Center Intelligence",
+        suggestions: [
+          "Tell me about Sela Tunnel and NH-13",
+          "What is the Sonapur Tunnel status?",
+          "How to treat high-altitude AMS?",
+          "What is the LoRa mesh protocol?",
+        ],
+        timestamp: timestampNow(),
+      },
+      { headers: OFFLINE_HEADERS }
     );
+  } catch (error) {
+    return NextResponse.json({ error: "Internal chat processing error" }, { status: 500 });
   }
 }
-

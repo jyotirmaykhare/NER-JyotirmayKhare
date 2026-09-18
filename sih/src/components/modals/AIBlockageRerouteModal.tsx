@@ -12,100 +12,16 @@ import {
   ShieldCheck,
   AlertOctagon,
   CornerUpRight,
+  Radio,
 } from "lucide-react";
-
-interface Blockage {
-  blockage_id: string;
-  road_name: string;
-  highway: string;
-  location_name: string;
-  reason: string;
-  status: string;
-  clearing_eta: string;
-  diversion_corridor: string;
-}
-
-interface AlternateRouteData {
-  distance_km: number;
-  duration_text: string;
-  risk_score: number;
-  fuel_required_litres: number;
-  navigation_steps: { step_number: number; instruction: string; distance_km: number }[];
-}
-
-const DEFAULT_BLOCKAGES: Blockage[] = [
-  {
-    blockage_id: "blk-1",
-    road_name: "NH-13 Sela Pass Sector (Km 42-48)",
-    highway: "Trans-Arunachal Highway",
-    location_name: "West Kameng Pass Corridor",
-    reason: "Heavy mud debris and granite boulder slippage across both lanes following continuous mountain rain.",
-    status: "CLOSED (Emergency Convoy Only)",
-    clearing_eta: "6 to 8 hours (BRO Project Vartak active)",
-    diversion_corridor: "Sela All-Weather Twin Tunnel (Bypass Km 38)",
-  },
-  {
-    blockage_id: "blk-2",
-    road_name: "NH-27 Sonapur Tunnel Approach",
-    highway: "East-West Highway Corridor",
-    location_name: "Jaintia Hills Sector, Meghalaya",
-    reason: "Sub-surface mudflow and water discharge over highway surface. Heavy commercial freight restricted.",
-    status: "RESTRICTED 1-LANE",
-    clearing_eta: "3 to 4 hours",
-    diversion_corridor: "Old Jowai-Badarpur Mountain Bypass",
-  },
-  {
-    blockage_id: "blk-3",
-    road_name: "NH-29 Chumukedima Hill Section",
-    highway: "Dimapur-Kohima Highway",
-    location_name: "Old Medziphema Gorge, Nagaland",
-    reason: "Rockfall and cliff overhang instability during rainfall. Single-lane convoy under escort.",
-    status: "ESCORT PASSAGE ONLY",
-    clearing_eta: "5 hours",
-    diversion_corridor: "Niuland-Kohima Alternative Ridge Road",
-  },
-];
-
-const DEFAULT_ALTERNATES: Record<string, AlternateRouteData> = {
-  "blk-1": {
-    distance_km: 495,
-    duration_text: "11h 42m",
-    risk_score: 21,
-    fuel_required_litres: 48.2,
-    navigation_steps: [
-      { step_number: 1, instruction: "Diverge right from NH-13 at Km 38 Dirang bypass gate", distance_km: 12.4 },
-      { step_number: 2, instruction: "Enter South Portal of Sela All-Weather Tunnel (Elev. 3000m)", distance_km: 9.8 },
-      { step_number: 3, instruction: "Re-join primary Tawang corridor past hazardous scree zone", distance_km: 18.2 },
-    ],
-  },
-  "blk-2": {
-    distance_km: 320,
-    duration_text: "8h 15m",
-    risk_score: 28,
-    fuel_required_litres: 38.5,
-    navigation_steps: [
-      { step_number: 1, instruction: "Take Jowai bypass road before Sonapur choke point", distance_km: 16.0 },
-      { step_number: 2, instruction: "Cross elevated Bailey bridge sector with 25T load limit", distance_km: 4.2 },
-      { step_number: 3, instruction: "Merge onto NH-06 arterial road towards Silchar valley", distance_km: 22.1 },
-    ],
-  },
-  "blk-3": {
-    distance_km: 74,
-    duration_text: "2h 45m",
-    risk_score: 32,
-    fuel_required_litres: 14.0,
-    navigation_steps: [
-      { step_number: 1, instruction: "Exit Dimapur ring road via Niuland connector", distance_km: 8.5 },
-      { step_number: 2, instruction: "Follow ridge road bypassing rockfall overhang zone", distance_km: 34.0 },
-      { step_number: 3, instruction: "Re-enter NH-29 at Kohima checkpost gate", distance_km: 12.0 },
-    ],
-  },
-};
+import { BlockageInfo, RouteAlternative } from "@/types/api";
+import { getAlternateRoute, getBlockages } from "@/services/routeService";
+import { ALTERNATE_ROUTE_FALLBACK, BLOCKAGE_FALLBACK } from "@/data/blockages";
 
 interface AIBlockageRerouteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApplyAlternateRoute?: (route: AlternateRouteData, blockage: Blockage) => void;
+  onApplyAlternateRoute?: (route: RouteAlternative, blockage: BlockageInfo) => void;
 }
 
 export default function AIBlockageRerouteModal({
@@ -113,8 +29,13 @@ export default function AIBlockageRerouteModal({
   onClose,
   onApplyAlternateRoute,
 }: AIBlockageRerouteModalProps) {
-  const [blockages] = useState<Blockage[]>(DEFAULT_BLOCKAGES);
-  const [selectedId, setSelectedId] = useState<string>("blk-1");
+  const [blockages, setBlockages] = useState<BlockageInfo[]>(BLOCKAGE_FALLBACK);
+  const [selectedId, setSelectedId] = useState<string>(BLOCKAGE_FALLBACK[0].blockage_id);
+  const [alternateData, setAlternateData] = useState<RouteAlternative>(
+    ALTERNATE_ROUTE_FALLBACK["blk-1"]
+  );
+  const [voiceAnnouncement, setVoiceAnnouncement] = useState<string>("");
+  const [isLive, setIsLive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [applied, setApplied] = useState(false);
 
@@ -128,18 +49,64 @@ export default function AIBlockageRerouteModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Load the live blockage register whenever the modal opens.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let cancelled = false;
+
+    getBlockages().then((response) => {
+      if (cancelled) return;
+      setBlockages(response.data);
+      setIsLive(response.source === "live");
+      setSelectedId((current) =>
+        response.data.some((b) => b.blockage_id === current)
+          ? current
+          : response.data[0].blockage_id
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen]);
+
+  // Recompute the AI detour whenever the selected obstruction changes.
+  useEffect(() => {
+    if (!isOpen || !selectedId) return;
+
+    let cancelled = false;
+    setIsLoading(true);
+    setApplied(false);
+
+    getAlternateRoute({
+      blocked_road_id: selectedId,
+      origin_hub_id: "guwahati",
+      destination_hub_id: "tawang",
+    })
+      .then((response) => {
+        if (cancelled) return;
+        setAlternateData(response.data.ai_alternate_route);
+        setVoiceAnnouncement(response.data.voice_announcement);
+        setIsLive(response.source === "live");
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, selectedId]);
+
   if (!isOpen) return null;
 
-  const currentBlockage = blockages.find((b) => b.blockage_id === selectedId) || blockages[0];
-  const alternateData = DEFAULT_ALTERNATES[selectedId] || DEFAULT_ALTERNATES["blk-1"];
+  const currentBlockage =
+    blockages.find((b) => b.blockage_id === selectedId) || blockages[0];
 
   const handleSelectBlockage = (id: string) => {
-    setIsLoading(true);
     setSelectedId(id);
     setApplied(false);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 350);
   };
 
   const handleApply = () => {
@@ -168,6 +135,15 @@ export default function AIBlockageRerouteModal({
                 </h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-black border border-red-500/40">
                   ACTIVE BLOCKAGE
+                </span>
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-black border ${
+                    isLive
+                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                      : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                  }`}
+                >
+                  {isLive ? "LIVE ENGINE" : "OFFLINE DATASET"}
                 </span>
               </div>
               <p className="text-xs text-rose-200/80">
@@ -230,6 +206,19 @@ export default function AIBlockageRerouteModal({
               <span className="text-rose-400 font-semibold">{currentBlockage.status}</span>
             </div>
           </div>
+
+          {/* Voice dispatch announcement generated by the detour engine */}
+          {voiceAnnouncement && (
+            <div className="p-3 rounded-xl bg-cyan-950/30 border border-cyan-800/50 text-[11px] text-cyan-100 flex items-start gap-2">
+              <Radio size={14} className="text-cyan-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 mb-1">
+                  Voice Dispatch Announcement
+                </div>
+                <p className="leading-relaxed">{voiceAnnouncement}</p>
+              </div>
+            </div>
+          )}
 
           {/* AI Alternate Route Recommendation Panel */}
           {isLoading ? (

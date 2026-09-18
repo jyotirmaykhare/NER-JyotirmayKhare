@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { RouteOption } from "@/types";
+import { GoogleRouteResponse } from "@/types/api";
+import { computeCorridor } from "@/services/routeService";
 import MapContainer from "@/components/map/MapContainer";
 import {
   GitFork,
@@ -24,6 +26,8 @@ export function RoutesView() {
   const [hasSearched, setHasSearched] = useState(true);
   const [selectedRouteId, setSelectedRouteId] = useState("route-rec");
   const [isBlockageModalOpen, setIsBlockageModalOpen] = useState(false);
+  const [corridor, setCorridor] = useState<GoogleRouteResponse | null>(null);
+  const [isCorridorLive, setIsCorridorLive] = useState(false);
 
   // Route Options (Matching prompt specification)
   const routeOptions: RouteOption[] = [
@@ -85,15 +89,29 @@ export function RoutesView() {
     },
   ];
 
-  const handleFindRoute = (e: React.FormEvent) => {
+  const handleFindRoute = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSearching(true);
-    setTimeout(() => {
-      setIsSearching(false);
-      setHasSearched(true);
-      // Focus on midpoint
-      focusOnLocation(27.0, 92.3, 8, "Recommended Route: Guwahati to Tawang");
-    }, 500);
+
+    // Query the corridor engine for the selected route's true termini.
+    const primary = routeOptions.find((r) => r.id === selectedRouteId) || routeOptions[0];
+    const start = primary.coordinates[0];
+    const end = primary.coordinates[primary.coordinates.length - 1];
+
+    const response = await computeCorridor({
+      origin: { latitude: start[0], longitude: start[1] },
+      destination: { latitude: end[0], longitude: end[1] },
+      weather_condition: "Monsoon Rain",
+      road_condition: "Wet Asphalt",
+    });
+
+    setCorridor(response.data);
+    setIsCorridorLive(response.source === "live");
+
+    setIsSearching(false);
+    setHasSearched(true);
+    // Focus on midpoint
+    focusOnLocation(27.0, 92.3, 8, "Recommended Route: Guwahati to Tawang");
   };
 
   const activeRoute = routeOptions.find((r) => r.id === selectedRouteId) || routeOptions[0];
@@ -112,6 +130,22 @@ export function RoutesView() {
           <p className="text-xs text-slate-400 mt-0.5">
             AI Risk-Weighted Multi-Criteria Route Planning across North Eastern Mountain Corridors
           </p>
+          {corridor && (
+            <p className="text-[11px] font-mono mt-1 flex items-center gap-1.5 text-slate-400">
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isCorridorLive ? "bg-emerald-400" : "bg-amber-400"
+                }`}
+              />
+              <span>
+                {isCorridorLive ? "LIVE CORRIDOR" : "SURVEYED DATASET"} • {corridor.distance.text} /{" "}
+                {corridor.duration.text}
+                {corridor.risk_assessment
+                  ? ` • risk ${corridor.risk_assessment.composite_risk}/100`
+                  : ""}
+              </span>
+            </p>
+          )}
         </div>
 
         <button
