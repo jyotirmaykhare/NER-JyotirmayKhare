@@ -208,7 +208,7 @@ export default function LeafletMap({
       const customIcon = L.divIcon({
         className: "custom-bridge-icon",
         html: `
-          <div style="background-color: ${iconColor}; width: 14px; height: 14px; border: 2px solid #ffffff; border-radius: 2px; box-shadow: 0 0 8px rgba(0,0,0,0.6);" title="${bridge.name}"></div>
+          <div style="background-color: ${iconColor}; width: 14px; height: 14px; border: 2px solid #ffffff; border-radius: 2px;" title="${bridge.name}"></div>
         `,
         iconSize: [14, 14],
         iconAnchor: [7, 7],
@@ -260,8 +260,8 @@ export default function LeafletMap({
         className: "custom-vehicle-marker",
         html: `
           <div style="display: flex; align-items: center; justify-content: center; position: relative;">
-            <div style="background: #0f172a; border: 2px solid ${isDelayed ? '#f59e0b' : '#10b981'}; border-radius: 6px; padding: 2px 5px; display: flex; align-items: center; gap: 3px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
-              <span style="width: 7px; height: 7px; border-radius: 50%;" class="${badgeColor} ${vehicle.status === 'moving' ? 'animate-ping' : ''}"></span>
+            <div style="background: #ffffff; border: 2px solid ${isDelayed ? '#b45309' : '#18794e'}; border-radius: 3px; padding: 2px 5px; display: flex; align-items: center; gap: 3px;">
+              <span style="width: 7px; height: 7px; border-radius: 50%;" class="${badgeColor}"></span>
               <span style="color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: -0.2px;">${vehicle.plateNumber}</span>
             </div>
           </div>
@@ -320,9 +320,7 @@ export default function LeafletMap({
         html: `
           <div style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: ${
             isCritical ? "#ef4444" : "#f97316"
-          }; border: 2px solid #ffffff; box-shadow: 0 0 12px ${isCritical ? "rgba(239,68,68,0.8)" : "rgba(249,115,22,0.6)"};" class="${
-            isCritical ? "pulse-beacon" : ""
-          }">
+          }; border: 2px solid #ffffff;">
             <span style="color: #ffffff; font-size: 12px; font-weight: 900;">!</span>
           </div>
         `,
@@ -596,7 +594,7 @@ export default function LeafletMap({
           <button
             onClick={handleResetView}
             className="p-2 text-slate-300 hover:text-white hover:bg-slate-800"
-            title="Reset North East View"
+            title="Fit North East region"
           >
             <Compass className="w-4 h-4" />
           </button>

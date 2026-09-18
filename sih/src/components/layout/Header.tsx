@@ -8,7 +8,6 @@ import {
   Activity,
   Wifi,
   WifiOff,
-  Car,
   Bot,
   Globe,
   User,
@@ -22,23 +21,24 @@ import {
   MapPin,
   Sun,
   Moon,
+  LogIn,
 } from "lucide-react";
 
 export function Header() {
   const { isDark, toggleTheme } = useTheme();
   const {
     currentUser,
+    activeTab,
+    setActiveTab,
     isLoggedIn,
     isPrivilegedVerified,
     activeEmergencySession,
     isOffline,
-    setIsOffline,
     pendingOfflineCount,
     language,
     setLanguage,
     t,
     setIsAiCopilotOpen,
-    setIsDriverHudOpen,
     setIsLoginModalOpen,
     setIsVerificationModalOpen,
     logout,
@@ -58,7 +58,7 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-14 px-3 sm:px-5 bg-slate-950/95 border-b border-slate-800/80 backdrop-blur-md">
+    <header className="ops-header sticky top-0 z-30 flex items-center justify-between h-14 px-3 sm:px-5 bg-[#172033] border-b border-slate-700">
       {/* Left: Branding & Status Indicator */}
       <div className="flex items-center gap-3">
         <button
@@ -104,17 +104,36 @@ export function Header() {
         )}
       </div>
 
+      <nav aria-label="Primary navigation" className="hidden xl:flex items-center gap-1 mx-3 overflow-x-auto">
+        {[
+          ["overview", "Overview"], ["map", "Map"], ["routes", "Routes"], ["vehicles", "Vehicles"],
+          ["shipments", "Shipments"], ["accessibility", "Accessibility"], ["weather", "Weather"],
+          ["alerts", "Alerts"], ["analytics", "Analytics"], ["field-reports", "Field Report"],
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`shrink-0 px-2 py-1 text-[11px] font-semibold border-b-2 transition-colors ${
+              activeTab === id
+                ? id === "field-reports" ? "border-amber-400 text-amber-300" : "border-sky-400 text-white"
+                : id === "field-reports" ? "border-transparent text-amber-300 hover:text-amber-200" : "border-transparent text-slate-300 hover:text-white"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+
       {/* Right Action Tools */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Offline / Online Toggle */}
-        <button
-          onClick={() => setIsOffline(!isOffline)}
+        {/* Automatic connectivity state; this is intentionally informational. */}
+        <div
           className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium border transition-colors ${
             isOffline
               ? "bg-amber-950/80 border-amber-600 text-amber-300 hover:bg-amber-900/80"
               : "bg-slate-900 border-slate-700/80 text-slate-300 hover:bg-slate-800"
           }`}
-          title={isOffline ? "Currently working offline. Click to reconnect." : "Working online. Click to simulate offline mode."}
+          title={isOffline ? "Offline: queued reports will send automatically when connectivity returns." : "Online: connectivity is checked automatically."}
         >
           {isOffline ? (
             <>
@@ -130,19 +149,10 @@ export function Header() {
             <>
               <Wifi className="w-3.5 h-3.5 text-emerald-400" />
               <span className="hidden md:inline text-slate-300">Online</span>
+              <span className="hidden lg:inline text-slate-500">Last checked now</span>
             </>
           )}
-        </button>
-
-        {/* Car / In-Cab HUD Mode Toggle */}
-        <button
-          onClick={() => setIsDriverHudOpen(true)}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-slate-900 border border-slate-700/80 text-slate-200 hover:bg-slate-800 hover:text-white transition-colors"
-          title="Launch Driver HUD / Car Screen Mode"
-        >
-          <Car className="w-3.5 h-3.5 text-amber-400" />
-          <span className="hidden lg:inline">Car HUD</span>
-        </button>
+        </div>
 
         {/* Google Maps Amenities Search Button */}
         <button
@@ -210,19 +220,17 @@ export function Header() {
         {/* User Account / Role Menu */}
         <div className="relative">
           <button
-            onClick={() => setShowUserMenu(!showUserMenu)}
+            onClick={() => isLoggedIn ? setShowUserMenu(!showUserMenu) : setIsLoginModalOpen(true)}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200"
           >
-            <div className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white">
-              {currentUser.name.charAt(0)}
-            </div>
-            <span className="hidden sm:inline max-w-[100px] truncate text-slate-200 text-[11px]">
-              {currentUser.name.split(" ")[0]}
-            </span>
-            <ChevronDown className="w-3 h-3 text-slate-500" />
+            {isLoggedIn ? <>
+              <div className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-white">{currentUser.name.charAt(0)}</div>
+              <span className="hidden sm:inline max-w-[100px] truncate text-slate-200 text-[11px]">{currentUser.name.split(" ")[0]}</span>
+              <ChevronDown className="w-3 h-3 text-slate-500" />
+            </> : <><LogIn className="w-3.5 h-3.5" /><span>Login</span></>}
           </button>
 
-          {showUserMenu && (
+          {showUserMenu && isLoggedIn && (
             <div className="absolute right-0 mt-1 w-64 p-3 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl z-50 text-xs">
               <div className="pb-2 border-b border-slate-800">
                 <div className="font-bold text-white truncate">{currentUser.name}</div>
@@ -245,6 +253,12 @@ export function Header() {
 
               {/* Actions */}
               <div className="pt-2 flex flex-col gap-1">
+                <button
+                  onClick={() => { setShowUserMenu(false); setActiveTab("profile"); }}
+                  className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-800 text-slate-300 flex items-center gap-2"
+                >
+                  <User className="w-3.5 h-3.5" /><span>Profile</span>
+                </button>
                 {!isPrivilegedVerified && (
                   <button
                     onClick={() => {
@@ -266,7 +280,7 @@ export function Header() {
                   className="w-full text-left px-2 py-1.5 rounded hover:bg-slate-800 text-slate-300 flex items-center gap-2"
                 >
                   <User className="w-3.5 h-3.5" />
-                  <span>Switch Demo User</span>
+                  <span>Settings / Switch user</span>
                 </button>
 
                 <button

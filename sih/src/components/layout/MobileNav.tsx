@@ -7,7 +7,6 @@ import {
   Map,
   GitFork,
   AlertTriangle,
-  User,
   Menu,
   X,
   Truck,
@@ -17,7 +16,6 @@ import {
   FileText,
   ShieldAlert,
   BarChart3,
-  Car,
   Lock,
 } from "lucide-react";
 
@@ -28,7 +26,6 @@ export function MobileNav() {
     isPrivilegedVerified,
     activeEmergencySession,
     setIsVerificationModalOpen,
-    setIsDriverHudOpen,
     t,
   } = useApp();
 
@@ -38,8 +35,8 @@ export function MobileNav() {
     { id: "overview", label: "Home", icon: LayoutDashboard },
     { id: "map", label: "Map", icon: Map },
     { id: "routes", label: "Routes", icon: GitFork },
+    { id: "field-reports", label: "Report", icon: FileText },
     { id: "alerts", label: "Alerts", icon: AlertTriangle },
-    { id: "profile", label: "Profile", icon: User },
   ];
 
   const secondaryTabs = [
@@ -47,7 +44,6 @@ export function MobileNav() {
     { id: "shipments", label: t.shipments, icon: Package },
     { id: "accessibility", label: t.accessibility, icon: Activity },
     { id: "weather", label: t.weather, icon: CloudRain },
-    { id: "field-reports", label: t.fieldReports, icon: FileText },
     { id: "analytics", label: t.analytics, icon: BarChart3 },
   ];
 
@@ -97,27 +93,6 @@ export function MobileNav() {
                   </div>
                 </div>
                 {!isPrivilegedVerified && <Lock className="w-4 h-4 text-slate-500" />}
-              </button>
-            </div>
-
-            {/* In-Cab Car HUD Link */}
-            <div className="mb-3">
-              <button
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setIsDriverHudOpen(true);
-                }}
-                className="w-full flex items-center justify-between p-3 rounded-lg border border-amber-800/40 bg-amber-950/20 text-amber-300 hover:bg-amber-950/40 text-xs font-bold"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Car className="w-5 h-5 text-amber-400" />
-                  <div className="text-left">
-                    <div>Driver HUD / Car Screen Mode</div>
-                    <div className="text-[10px] text-amber-400/80 font-normal">
-                      High-contrast driving display with critical checkpoint alerts
-                    </div>
-                  </div>
-                </div>
               </button>
             </div>
 

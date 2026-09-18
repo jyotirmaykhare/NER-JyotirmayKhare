@@ -27,7 +27,6 @@ export interface TranslationStrings {
   restrictedAccess: string;
   verifyIdentity: string;
   findRoute: string;
-  driverHud: string;
   offlineMode: string;
   onlineMode: string;
 }
@@ -60,7 +59,6 @@ export const TRANSLATIONS: Record<LanguageCode, TranslationStrings> = {
     restrictedAccess: "Restricted Access",
     verifyIdentity: "Verify Identity",
     findRoute: "Find Route",
-    driverHud: "Driver HUD",
     offlineMode: "Offline",
     onlineMode: "Online",
   },
@@ -91,7 +89,6 @@ export const TRANSLATIONS: Record<LanguageCode, TranslationStrings> = {
     restrictedAccess: "प्रतिबंधित पहुंच",
     verifyIdentity: "पहचान सत्यापित करें",
     findRoute: "मार्ग खोजें",
-    driverHud: "चालक एचयूडी",
     offlineMode: "ऑफ़लाइन",
     onlineMode: "ऑनलाइन",
   },
@@ -122,7 +119,6 @@ export const TRANSLATIONS: Record<LanguageCode, TranslationStrings> = {
     restrictedAccess: "সংৰক্ষিত প্ৰৱেশাধিকাৰ",
     verifyIdentity: "পৰিচয় পৰীক্ষা কৰক",
     findRoute: "পথ বিচাৰক",
-    driverHud: "চালক এইচইউডি",
     offlineMode: "অফলাইন",
     onlineMode: "অনলাইন",
   },
@@ -153,7 +149,6 @@ export const TRANSLATIONS: Record<LanguageCode, TranslationStrings> = {
     restrictedAccess: "সীমাবদ্ধ প্রবেশাধিকার",
     verifyIdentity: "পরিচয় যাচাই করুন",
     findRoute: "রুট খুঁজুন",
-    driverHud: "ড্রাইভার স্ক্রিন",
     offlineMode: "অফলাইন",
     onlineMode: "অনলাইন",
   },
@@ -184,7 +179,6 @@ export const TRANSLATIONS: Record<LanguageCode, TranslationStrings> = {
     restrictedAccess: "রেষ্ট্রিক্টেড",
     verifyIdentity: "আইদেন্টিটি ভেরিফাই",
     findRoute: "লমবী থিবিয়ু",
-    driverHud: "দ্রাইভর স্ক্ৰিন",
     offlineMode: "ওফলাইন",
     onlineMode: "ওনলাইন",
   },

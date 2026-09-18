@@ -16,7 +16,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { BarChart3, TrendingUp, AlertTriangle, Truck, Package, Lock, Shield } from "lucide-react";
+import { BarChart3, TrendingUp, AlertTriangle, Truck, Package, Shield } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 
 // Mock Analytical Datasets for NER
@@ -59,49 +59,7 @@ const districtRiskLevels = [
 ];
 
 export function AnalyticsView() {
-  const { currentUser, login } = useApp();
-  const isAdmin = currentUser.role === "Administrator" || currentUser.role === "Emergency Commander";
-
-  if (!isAdmin) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-6 bg-slate-950">
-        <div className="w-full max-w-md p-8 rounded-2xl border border-slate-800 bg-slate-900/90 text-center shadow-2xl space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-amber-950/60 border border-amber-600/50 flex items-center justify-center text-amber-400 mx-auto shadow-lg shadow-amber-950/40">
-            <Lock className="w-7 h-7" />
-          </div>
-          <div>
-            <div className="text-[11px] font-bold text-amber-400 uppercase tracking-widest mb-1">
-              ADMINISTRATOR ONLY
-            </div>
-            <h2 className="text-lg font-black text-white">
-              Analytical Intelligence Restricted
-            </h2>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-              Analytical charts, corridor delay modeling, and multi-district disruption predictions are available exclusively to Administrator accounts.
-            </p>
-          </div>
-
-          <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-left space-y-1">
-            <div className="flex justify-between text-slate-400">
-              <span>Current Profile:</span>
-              <span className="text-white font-medium">{currentUser.name}</span>
-            </div>
-            <div className="flex justify-between text-slate-400">
-              <span>Current Role:</span>
-              <span className="text-sky-400 font-semibold">{currentUser.role}</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => login("Administrator")}
-            className="w-full py-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs uppercase tracking-wider transition-colors shadow-lg cursor-pointer"
-          >
-            SWITCH TO ADMINISTRATOR PROFILE
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const { currentUser } = useApp();
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-slate-950 p-3 sm:p-5 overflow-y-auto space-y-4">

@@ -6,7 +6,6 @@ import { AppProvider, useApp } from "@/context/AppContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Header } from "@/components/layout/Header";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { LandingModal } from "@/components/layout/LandingModal";
 import { LoginModal } from "@/components/modals/LoginModal";
@@ -29,12 +28,10 @@ const FieldReportsView = dynamic(() => import("@/components/views/FieldReportsVi
 const EmergencyOpsView = dynamic(() => import("@/components/views/EmergencyOpsView").then(m => ({ default: m.EmergencyOpsView })), { loading: () => <TacticalLoader message="Loading Emergency Ops..." /> });
 const AnalyticsView = dynamic(() => import("@/components/views/AnalyticsView").then(m => ({ default: m.AnalyticsView })), { loading: () => <TacticalLoader message="Loading Analytics..." /> });
 const ProfileView = dynamic(() => import("@/components/views/ProfileView").then(m => ({ default: m.ProfileView })), { loading: () => <TacticalLoader message="Loading Profile..." /> });
-const DriverHudView = dynamic(() => import("@/components/views/DriverHudView").then(m => ({ default: m.DriverHudView })), { loading: () => <TacticalLoader message="Loading Driver HUD..." />, ssr: false });
 
 function MainContent() {
   const {
     activeTab,
-    isDriverHudOpen,
     notification,
     dismissNotification,
   } = useApp();
@@ -76,10 +73,8 @@ function MainContent() {
       {/* Global Application Header */}
       <Header />
 
-      {/* Body: Sidebar + Main Dynamic View */}
+      {/* Main operational workspace */}
       <div className="flex flex-1 min-h-0 overflow-hidden relative">
-        <Sidebar />
-
         <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative pb-14 md:pb-0">
           {renderActiveView()}
         </main>
@@ -93,7 +88,6 @@ function MainContent() {
       <LoginModal />
       <IdentityVerificationModal />
       <AiCopilotModal />
-      {isDriverHudOpen && <DriverHudView />}
 
       {/* System Toast Notification */}
       {notification && (

@@ -91,8 +91,6 @@ interface AppContextType {
   setIsVerificationModalOpen: (open: boolean) => void;
   isAiCopilotOpen: boolean;
   setIsAiCopilotOpen: (open: boolean) => void;
-  isDriverHudOpen: boolean;
-  setIsDriverHudOpen: (open: boolean) => void;
   isGoogleMapsOpen: boolean;
   setIsGoogleMapsOpen: (open: boolean) => void;
 
@@ -126,7 +124,6 @@ interface AppContextType {
 
   // Offline Simulation & Field Reports
   isOffline: boolean;
-  setIsOffline: (offline: boolean) => void;
   fieldReports: FieldReport[];
   pendingOfflineCount: number;
   submitFieldReport: (report: Omit<FieldReport, "id" | "timestamp" | "synced">) => { id: string; offline: boolean };
@@ -153,7 +150,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState<boolean>(false);
   const [isAiCopilotOpen, setIsAiCopilotOpen] = useState<boolean>(false);
-  const [isDriverHudOpen, setIsDriverHudOpen] = useState<boolean>(false);
   const [isGoogleMapsOpen, setIsGoogleMapsOpen] = useState<boolean>(false);
 
   // Language
@@ -177,7 +173,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(INITIAL_AUDIT_LOGS);
 
   // Offline Mode & Field Reports
-  const [isOffline, setIsOfflineState] = useState<boolean>(false);
+  const [isOffline, setIsOfflineState] = useState<boolean>(() => typeof navigator !== "undefined" && !navigator.onLine);
   const [fieldReports, setFieldReports] = useState<FieldReport[]>(() => {
     const defaultReports: FieldReport[] = [
       {
@@ -395,20 +391,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const setIsOffline = (offline: boolean) => {
-    setIsOfflineState(offline);
-    if (!offline) {
-      // Switched back to online: sync pending reports
-      syncOfflineReports();
-    } else {
-      showNotification(
-        "Offline Mode Active",
-        "Operating on cached telemetry. Submissions will be stored locally.",
-        "warning"
-      );
-    }
-  };
-
   const submitFieldReport = (reportData: Omit<FieldReport, "id" | "timestamp" | "synced">) => {
     const id = `INC-${Math.floor(10000 + Math.random() * 90000)}`;
     const newReport: FieldReport = {
@@ -475,6 +457,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  // Connectivity is derived from browser events and an API probe, never a manual mode.
+  useEffect(() => {
+    let disposed = false;
+    const checkReachability = async () => {
+      if (!navigator.onLine) {
+        if (!disposed) setIsOfflineState(true);
+        return;
+      }
+      try {
+        const response = await fetch("/api/health", { cache: "no-store" });
+        if (!disposed) setIsOfflineState(!response.ok);
+      } catch {
+        if (!disposed) setIsOfflineState(true);
+      }
+    };
+    const online = () => { void checkReachability(); };
+    const offline = () => setIsOfflineState(true);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offline);
+    void checkReachability();
+    const timer = window.setInterval(() => void checkReachability(), 30_000);
+    return () => {
+      disposed = true;
+      window.clearInterval(timer);
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offline);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOffline) syncOfflineReports();
+  }, [isOffline, fieldReports]);
+
   const pendingOfflineCount = fieldReports.filter((r) => !r.synced).length;
 
   return (
@@ -498,8 +513,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setIsVerificationModalOpen,
         isAiCopilotOpen,
         setIsAiCopilotOpen,
-        isDriverHudOpen,
-        setIsDriverHudOpen,
         isGoogleMapsOpen,
         setIsGoogleMapsOpen,
         language,
@@ -525,7 +538,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         sendBroadcast,
         auditLogs,
         isOffline,
-        setIsOffline,
         fieldReports,
         pendingOfflineCount,
         submitFieldReport,

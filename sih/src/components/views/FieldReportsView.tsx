@@ -13,7 +13,6 @@ import {
   WifiOff,
   CheckCircle2,
   AlertTriangle,
-  RotateCw,
   Clock,
   Sparkles,
   Shield,
@@ -25,9 +24,7 @@ export function FieldReportsView() {
     submitFieldReport,
     fieldReports,
     isOffline,
-    setIsOffline,
     pendingOfflineCount,
-    syncOfflineReports,
   } = useApp();
 
   // Form State
@@ -115,11 +112,10 @@ export function FieldReportsView() {
           </p>
         </div>
 
-        {/* Offline Status & Sync Control */}
+        {/* Automatic connectivity status */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsOffline(!isOffline)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${
               isOffline
                 ? "bg-amber-950/80 border-amber-600 text-amber-300"
                 : "bg-slate-900 border-slate-700 text-slate-300"
@@ -136,17 +132,9 @@ export function FieldReportsView() {
                 <span>🌐 ONLINE (CONNECTED)</span>
               </>
             )}
-          </button>
+          </div>
 
-          {pendingOfflineCount > 0 && (
-            <button
-              onClick={syncOfflineReports}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs cursor-pointer shadow-md"
-            >
-              <RotateCw className="w-3.5 h-3.5" />
-              <span>SYNC ({pendingOfflineCount})</span>
-            </button>
-          )}
+          {pendingOfflineCount > 0 && <span className="text-[11px] text-amber-400">{pendingOfflineCount} queued for automatic sync</span>}
         </div>
       </div>
 
