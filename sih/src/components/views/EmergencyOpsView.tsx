@@ -5,7 +5,6 @@ import { useApp } from "@/context/AppContext";
 import MapContainer from "@/components/map/MapContainer";
 import { StatCard } from "@/components/ui/StatCard";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { RiskIndicator } from "@/components/ui/RiskIndicator";
 import {
   ShieldAlert,
   Lock,
@@ -335,7 +334,7 @@ export function EmergencyOpsView() {
                 ))}
               </div>
 
-              {/* AI Generated Recommendation Display (from specification) */}
+              {/* Operational recommendation display */}
               <div className="space-y-3 pt-2 border-t border-slate-800">
                 <div className="p-3.5 rounded-lg border border-emerald-700/60 bg-emerald-950/30 text-xs space-y-2">
                   <div className="flex items-center justify-between">
@@ -363,7 +362,7 @@ export function EmergencyOpsView() {
                   </div>
 
                   <div className="text-[11px] text-slate-300 bg-slate-950 p-2 rounded border border-slate-800/80">
-                    <strong className="text-emerald-400 font-semibold">AI Reason: </strong>
+                    <strong className="text-emerald-400 font-semibold">Operational basis: </strong>
                     &ldquo;Safest currently accessible route. Utilizes reinforced military culvert and avoids low-lying river scouring zone.&rdquo;
                   </div>
 

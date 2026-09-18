@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import MapContainer from "@/components/map/MapContainer";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { RiskIndicator } from "@/components/ui/RiskIndicator";
 import { NE_STATES } from "@/data/states";
 import {
   Map,

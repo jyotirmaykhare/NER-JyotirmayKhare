@@ -4,14 +4,12 @@ import React, { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { Incident, IncidentType, IncidentSeverity } from "@/types";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { RiskIndicator } from "@/components/ui/RiskIndicator";
 import {
   AlertTriangle,
   Search,
   Filter,
   MapPin,
   Clock,
-  Sparkles,
   ArrowRight,
   ShieldAlert,
   ChevronRight,
@@ -158,17 +156,13 @@ export function AlertsView() {
                 </div>
               </div>
 
-              {/* AI Prediction Box (from specification) */}
+              {/* Reported field note */}
               <div className="p-2.5 rounded bg-sky-950/30 border border-sky-900/50 text-[11px] space-y-1">
                 <div className="flex items-center justify-between text-sky-400 font-bold uppercase text-[10px] tracking-wider">
-                  <span className="flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-sky-400" />
-                    AI Risk Prediction
-                  </span>
-                  <span>{inc.aiProbability}% PROBABILITY</span>
+                  <span>Reported field note</span>
                 </div>
-                <div className="text-slate-300 leading-relaxed italic">
-                  &ldquo;{inc.aiPredictionText}&rdquo;
+                <div className="text-slate-300 leading-relaxed">
+                  {inc.cause}
                 </div>
               </div>
             </div>

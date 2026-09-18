@@ -44,7 +44,7 @@ export function AiCopilotModal() {
     {
       id: "m-0",
       sender: "ai",
-      text: "Hello! I am **NER Intelligence**, your AI Logistics & Terrain Risk Assistant. I synthesize precipitation radar, satellite slope scans, and fleet telemetry across the North Eastern Region. How can I assist your logistics planning today?",
+      text: "Hello! I am **NER Operations Help**. I can help you find routes, vehicle information, and reported disruptions across the North Eastern Region.",
       timestamp: "Just now",
     },
   ]);
@@ -136,7 +136,7 @@ export function AiCopilotModal() {
               <div className="font-extrabold text-sm text-white flex items-center gap-1.5">
                 <span>NER Intelligence</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded bg-sky-950 text-sky-400 border border-sky-800 uppercase font-bold">
-                  AI Copilot
+                  Operations help
                 </span>
               </div>
               <div className="text-[11px] text-slate-400">

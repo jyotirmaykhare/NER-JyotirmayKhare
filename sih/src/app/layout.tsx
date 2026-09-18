@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NER LOGISTICS INTELLIGENCE | AI-Powered Smart Logistics & Accessibility Platform",
-  description: "AI-powered Smart Logistics and Accessibility Intelligence Platform for the North Eastern Region of India (Smart India Hackathon).",
+  title: "NER Logistics | Regional Operations",
+  description: "Regional logistics, route status, and field reports for North East India.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

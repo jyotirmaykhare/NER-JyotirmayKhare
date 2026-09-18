@@ -173,7 +173,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(INITIAL_AUDIT_LOGS);
 
   // Offline Mode & Field Reports
-  const [isOffline, setIsOfflineState] = useState<boolean>(() => typeof navigator !== "undefined" && !navigator.onLine);
+  // Keep the initial SSR/client render identical; the effect below resolves real connectivity.
+  const [isOffline, setIsOfflineState] = useState<boolean>(false);
   const [fieldReports, setFieldReports] = useState<FieldReport[]>(() => {
     const defaultReports: FieldReport[] = [
       {

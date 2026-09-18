@@ -71,7 +71,7 @@ export default function AIBlockageRerouteModal({
     };
   }, [isOpen]);
 
-  // Recompute the AI detour whenever the selected obstruction changes.
+  // Recompute the detour whenever the selected obstruction changes.
   useEffect(() => {
     if (!isOpen || !selectedId) return;
 
@@ -131,7 +131,7 @@ export default function AIBlockageRerouteModal({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-white text-base">
-                  AI Road Blockage & Alternate Detour Engine
+                  Road blockage and alternate detour
                 </h3>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-black border border-red-500/40">
                   ACTIVE BLOCKAGE
@@ -220,12 +220,12 @@ export default function AIBlockageRerouteModal({
             </div>
           )}
 
-          {/* AI Alternate Route Recommendation Panel */}
+          {/* Alternate route panel */}
           {isLoading ? (
             <div className="p-8 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center space-y-3">
               <RefreshCw size={24} className="animate-spin text-cyan-400" />
               <span className="text-sm font-semibold text-slate-300">
-                Calculating AI bypass contour & hazard delta...
+                Calculating alternate route details...
               </span>
             </div>
           ) : (
@@ -236,7 +236,7 @@ export default function AIBlockageRerouteModal({
                     <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
                     <div>
                       <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
-                        AI Recommended Bypass Corridor
+                        Suggested bypass corridor
                       </span>
                       <h4 className="font-extrabold text-white text-sm sm:text-base">
                         {currentBlockage.diversion_corridor}
@@ -335,7 +335,7 @@ export default function AIBlockageRerouteModal({
               </>
             ) : (
               <>
-                <span>Apply AI Bypass Detour</span>
+                <span>Apply bypass detour</span>
                 <ArrowRight size={14} />
               </>
             )}

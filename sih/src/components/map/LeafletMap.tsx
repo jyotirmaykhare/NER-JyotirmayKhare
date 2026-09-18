@@ -179,7 +179,7 @@ export default function LeafletMap({
             <div>Weather: <span class="text-white">${road.weather.split("(")[0]}</span></div>
           </div>
           <div class="p-2 rounded bg-slate-900 border border-slate-700 mb-2.5">
-            <div class="text-[10px] text-sky-400 font-bold uppercase tracking-wider mb-0.5">AI Recommendation</div>
+            <div class="text-[10px] text-sky-400 font-bold uppercase tracking-wider mb-0.5">Operational note</div>
             <div class="text-[11px] text-slate-300 italic">"${road.aiRecommendation}"</div>
           </div>
           <div class="text-[10px] text-slate-500 text-right">Click road to open full panel</div>
@@ -348,8 +348,8 @@ export default function LeafletMap({
           <div class="font-semibold text-white text-xs mb-1">${incident.title}</div>
           <div class="text-slate-400 text-[11px] mb-2">📍 ${incident.location}</div>
           <div class="text-[11px] text-slate-300 bg-slate-900/90 p-2 rounded border border-slate-700 mb-2">
-            <div class="text-[10px] text-amber-400 font-bold uppercase mb-0.5">AI Risk Prediction (${incident.aiProbability}%)</div>
-            <div class="text-slate-300 italic">${incident.aiPredictionText}</div>
+            <div class="text-[10px] text-amber-400 font-bold uppercase mb-0.5">Reported condition</div>
+            <div class="text-slate-300">${incident.cause}</div>
           </div>
           <div class="flex items-center justify-between text-[10px] text-slate-400">
             <span>Est. Delay: +${incident.estimatedDelayHours}h</span>

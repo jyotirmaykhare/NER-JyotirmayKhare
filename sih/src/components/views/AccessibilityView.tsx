@@ -5,7 +5,6 @@ import { useApp } from "@/context/AppContext";
 import { Road, Bridge } from "@/types";
 import { MOCK_BRIDGES } from "@/data/bridges";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { RiskIndicator } from "@/components/ui/RiskIndicator";
 import {
   Activity,
   Search,
@@ -156,9 +155,6 @@ export function AccessibilityView() {
                   </button>
                 </div>
 
-                {/* Risk Bar */}
-                <RiskIndicator score={road.riskScore} size="sm" />
-
                 {/* Condition Details */}
                 <div className="p-2 rounded bg-slate-950 border border-slate-800/80 text-xs text-slate-300">
                   <div className="text-slate-400 font-medium">
@@ -169,9 +165,9 @@ export function AccessibilityView() {
                   </div>
                 </div>
 
-                {/* AI Recommendation */}
+                {/* Operational note */}
                 <div className="p-2 rounded bg-sky-950/30 border border-sky-900/40 text-[11px] text-slate-300">
-                  <span className="font-bold text-sky-400">AI Recommendation: </span>
+                  <span className="font-bold text-sky-400">Operational note: </span>
                   {road.aiRecommendation}
                 </div>
               </div>

@@ -104,11 +104,11 @@ export function FieldReportsView() {
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-sky-400" />
             <h1 className="text-base sm:text-lg font-black tracking-tight text-white">
-              MOBILE-FIRST FIELD INCIDENT REPORTING
+              LIVE REPORTS
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Offline-Capable Hazard Logging for Border Roads (BRO), Drivers, and Regional Field Officers
+            Report an issue from the field. Reports save safely and send automatically when the network returns.
           </p>
         </div>
 
@@ -159,7 +159,7 @@ export function FieldReportsView() {
         <div className="lg:col-span-6 bg-slate-900/80 border border-slate-800 rounded-xl p-5 shadow-xl space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <span>REPORT INCIDENT</span>
+              <span>CREATE LIVE REPORT</span>
             </h2>
             <span className="text-[10px] uppercase font-bold text-slate-400">
               Form Protocol: v2.4
@@ -334,7 +334,7 @@ export function FieldReportsView() {
         <div className="lg:col-span-6 space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-slate-800">
             <h2 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-              Local Submissions Queue ({fieldReports.length})
+              LIVE REPORT HISTORY ({fieldReports.length})
             </h2>
             <span className="text-[11px] text-slate-500">
               Synced with browser storage

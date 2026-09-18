@@ -26,7 +26,6 @@ const AlertsView = dynamic(() => import("@/components/views/AlertsView").then(m 
 const WeatherView = dynamic(() => import("@/components/views/WeatherView").then(m => ({ default: m.WeatherView })), { loading: () => <TacticalLoader message="Loading Weather..." /> });
 const FieldReportsView = dynamic(() => import("@/components/views/FieldReportsView").then(m => ({ default: m.FieldReportsView })), { loading: () => <TacticalLoader message="Loading Field Reports..." /> });
 const EmergencyOpsView = dynamic(() => import("@/components/views/EmergencyOpsView").then(m => ({ default: m.EmergencyOpsView })), { loading: () => <TacticalLoader message="Loading Emergency Ops..." /> });
-const AnalyticsView = dynamic(() => import("@/components/views/AnalyticsView").then(m => ({ default: m.AnalyticsView })), { loading: () => <TacticalLoader message="Loading Analytics..." /> });
 const ProfileView = dynamic(() => import("@/components/views/ProfileView").then(m => ({ default: m.ProfileView })), { loading: () => <TacticalLoader message="Loading Profile..." /> });
 
 function MainContent() {
@@ -59,8 +58,6 @@ function MainContent() {
         return <FieldReportsView />;
       case "emergency":
         return <EmergencyOpsView />;
-      case "analytics":
-        return <AnalyticsView />;
       case "profile":
         return <ProfileView />;
       default:
@@ -75,7 +72,7 @@ function MainContent() {
 
       {/* Main operational workspace */}
       <div className="flex flex-1 min-h-0 overflow-hidden relative">
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative pb-14 md:pb-0">
+        <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative pb-14 lg:pb-0">
           {renderActiveView()}
         </main>
       </div>

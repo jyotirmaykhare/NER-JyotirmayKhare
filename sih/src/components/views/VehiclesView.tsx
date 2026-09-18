@@ -5,7 +5,6 @@ import { useApp } from "@/context/AppContext";
 import { Vehicle } from "@/types";
 import { getFleet } from "@/services/fleetService";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { RiskIndicator } from "@/components/ui/RiskIndicator";
 import MapContainer from "@/components/map/MapContainer";
 import {
   Truck,
@@ -289,10 +288,10 @@ export function VehiclesView() {
 
                 <div className="p-2.5 rounded bg-slate-950 border border-slate-800">
                   <div className="text-[10px] text-slate-500 uppercase font-semibold">
-                    Terrain Risk Score
+                    Current route status
                   </div>
                   <div className="text-sm font-black text-amber-400 font-mono">
-                    {activeVehicle.riskScore}%
+                    {activeVehicle.status}
                   </div>
                 </div>
               </div>

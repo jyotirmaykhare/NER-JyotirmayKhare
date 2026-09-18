@@ -8,7 +8,6 @@ import { computeCorridor } from "@/services/routeService";
 import MapContainer from "@/components/map/MapContainer";
 import {
   GitFork,
-  Sparkles,
   CheckCircle2,
   AlertOctagon,
 } from "lucide-react";
@@ -124,11 +123,11 @@ export function RoutesView() {
           <div className="flex items-center gap-2">
             <GitFork className="w-5 h-5 text-sky-400" />
             <h1 className="text-base sm:text-lg font-black tracking-tight text-white">
-              ROUTE INTELLIGENCE & CORRIDOR OPTIMIZATION
+              ROUTE PLANNING
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            AI Risk-Weighted Multi-Criteria Route Planning across North Eastern Mountain Corridors
+            Compare active corridors using current route, weather, and access information.
           </p>
           {corridor && (
             <p className="text-[11px] font-mono mt-1 flex items-center gap-1.5 text-slate-400">
@@ -140,9 +139,6 @@ export function RoutesView() {
               <span>
                 {isCorridorLive ? "LIVE CORRIDOR" : "SURVEYED DATASET"} • {corridor.distance.text} /{" "}
                 {corridor.duration.text}
-                {corridor.risk_assessment
-                  ? ` • risk ${corridor.risk_assessment.composite_risk}/100`
-                  : ""}
               </span>
             </p>
           )}
@@ -154,7 +150,7 @@ export function RoutesView() {
           className="self-start sm:self-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-700/60 text-rose-300 hover:text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
         >
           <AlertOctagon className="w-4 h-4 text-rose-400" />
-          <span>AI Blockage Detour Engine</span>
+          <span>Plan a blockage detour</span>
         </button>
       </div>
 
@@ -255,7 +251,6 @@ export function RoutesView() {
               <span>Calculating...</span>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5" />
                 <span>FIND ROUTE</span>
               </>
             )}
@@ -269,7 +264,7 @@ export function RoutesView() {
         <div className="lg:col-span-5 space-y-3">
           <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
             <span>Evaluated Route Alternatives ({routeOptions.length})</span>
-            <span className="text-slate-500 font-normal">Ranked by AI safety score</span>
+            <span className="text-slate-500 font-normal">Compare distance, ETA, and delay</span>
           </div>
 
           {routeOptions.map((route) => {
@@ -311,18 +306,8 @@ export function RoutesView() {
                     <div className="font-bold text-white">{route.eta}</div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Risk Score</div>
-                    <div
-                      className={`font-bold ${
-                        route.riskScore > 60
-                          ? "text-red-400"
-                          : route.riskScore > 35
-                          ? "text-amber-400"
-                          : "text-emerald-400"
-                      }`}
-                    >
-                      {route.riskScore}%
-                    </div>
+                    <div className="text-slate-500">Access</div>
+                    <div className="font-bold text-emerald-400">{route.accessibilityPercentage}% open</div>
                   </div>
                   <div>
                     <div className="text-slate-500">Delay Offset</div>
@@ -330,9 +315,9 @@ export function RoutesView() {
                   </div>
                 </div>
 
-                {/* AI Reasoning (From Specification) */}
+                {/* Route note */}
                 <div className="p-2 rounded bg-slate-900 border border-slate-800 text-[11px] text-slate-300">
-                  <span className="font-bold text-sky-400">AI Reason: </span>
+                  <span className="font-bold text-sky-400">Route note: </span>
                   &ldquo;{route.reasoning}&rdquo;
                 </div>
 
@@ -369,7 +354,7 @@ export function RoutesView() {
         </div>
       </div>
 
-      {/* AI Blockage Reroute Modal */}
+      {/* Blockage reroute modal */}
       <AIBlockageRerouteModal
         isOpen={isBlockageModalOpen}
         onClose={() => setIsBlockageModalOpen(false)}

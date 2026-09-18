@@ -52,6 +52,40 @@ body {
   overflow-x: hidden;
 }
 
+/* A calm, spacious default for every operational view. */
+main > .flex-1 {
+  padding: 1.5rem 1.5rem 6rem !important;
+  gap: 1.5rem !important;
+}
+
+main button, main select, main input, main textarea {
+  min-height: 2.5rem;
+}
+
+.ops-header {
+  min-height: 4.5rem;
+  padding-inline: 1.5rem !important;
+}
+
+.ops-header > div:last-child {
+  gap: .75rem !important;
+}
+
+@media (min-width: 768px) {
+  main > .flex-1 { padding: 2.25rem 2.5rem 2.5rem !important; gap: 2rem !important; }
+  .ops-header { padding-inline: 2.5rem !important; }
+}
+
+@media (max-width: 767px) {
+  .ops-header { min-height: 3.75rem; padding-inline: .875rem !important; }
+  .ops-header > div:last-child > button:nth-of-type(2),
+  .ops-header > div:last-child > button:nth-of-type(3),
+  .ops-header > div:last-child > div:nth-of-type(1),
+  .ops-header > div:last-child > button:nth-of-type(4) { display: none; }
+  nav.fixed.bottom-0 { min-height: 4.5rem; padding: .5rem .75rem !important; }
+  nav.fixed.bottom-0 button { min-width: 3.6rem; min-height: 3.25rem; }
+}
+
 /* Transitional class mapping lets existing functional views adopt the system
    without replacing their data, event handlers, or responsive structure. */
 html body .bg-slate-950, html body [class*="bg-slate-950/"] { background-color: var(--ops-page) !important; }
@@ -72,6 +106,68 @@ html body .animate-ping, html body .animate-pulse { animation: none !important; 
 .ops-header .text-white { color: #ffffff !important; }
 .ops-header .text-slate-200, .ops-header .text-slate-300 { color: #d7dee8 !important; }
 .ops-header .text-slate-400, .ops-header .text-slate-500 { color: #aab5c4 !important; }
+.app-header .text-slate-300 { color: #d7dee8 !important; }
+.app-header .text-slate-400 { color: #aab5c4 !important; }
+.app-header nav button { min-height: 2.5rem; }
+.app-header nav button:focus-visible, .app-header button:focus-visible { outline: 2px solid #fbbf24; outline-offset: 3px; }
+.ner-brand-mark { position: relative; display: grid; height: 2.75rem; width: 2.75rem; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.32); border-radius: .65rem; background: #175cd3; box-shadow: inset 0 1px 0 rgba(255,255,255,.28); }
+.ner-brand-mark span { position: relative; z-index: 1; color: white; font-size: .7rem; font-weight: 900; letter-spacing: -.05em; }
+.ner-brand-mark i { position: absolute; right: -.4rem; height: 1px; width: 1.8rem; background: rgba(255,255,255,.45); transform: rotate(-38deg); }
+.ner-brand-mark i:nth-of-type(1) { top: .65rem; }
+.ner-brand-mark i:nth-of-type(2) { top: 1.15rem; }
+.ner-brand-mark i:nth-of-type(3) { top: 1.65rem; }
+
+/* Keep information panels refined rather than card-heavy. */
+main .rounded-xl, main .rounded-2xl { border-radius: .75rem !important; }
+main .rounded-lg { border-radius: .5rem !important; }
+
+/* Overview: a calm workspace built around decisions, not a wall of widgets. */
+.ops-overview { padding: 2rem 1.25rem 6rem; color: var(--ops-ink); }
+.ops-overview > * { max-width: 1480px; margin-inline: auto; }
+.ops-intro { display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding: 1rem 0 2.25rem; }
+.ops-eyebrow { margin: 0 0 .45rem; color: var(--ops-blue); font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.ops-intro h1 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.65rem); line-height: 1.08; letter-spacing: -.04em; font-weight: 750; }
+.ops-intro p:not(.ops-eyebrow), .ops-panel-heading p:not(.ops-eyebrow) { margin: .7rem 0 0; color: var(--ops-muted); font-size: .95rem; line-height: 1.55; }
+.ops-intro-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.ops-button { display: inline-flex; min-height: 2.75rem; align-items: center; gap: .5rem; border-radius: .45rem; padding: 0 1rem; font-size: .85rem; font-weight: 700; transition: background-color .15s ease, border-color .15s ease; }
+.ops-button-primary { background: var(--ops-blue); color: white; }
+.ops-button-primary:hover { background: #124fb5; }
+.ops-button-secondary { border: 1px solid var(--ops-border); background: white; color: var(--ops-ink); }
+.ops-button-secondary:hover { background: #f8fafc; }
+.ops-status-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.ops-status-card { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .9rem; min-height: 6.5rem; border: 1px solid var(--ops-border); border-radius: .7rem; background: white; padding: 1.1rem; text-align: left; transition: border-color .15s ease, transform .15s ease; }
+.ops-status-card:hover { border-color: #9db8e6; transform: translateY(-1px); }
+.ops-status-icon { display: grid; height: 2.4rem; width: 2.4rem; place-items: center; border-radius: .5rem; background: #f8fafc; }
+.ops-status-card strong, .ops-status-card small { display: block; }
+.ops-status-card strong { font-size: .92rem; }
+.ops-status-card small { margin-top: .22rem; color: var(--ops-muted); font-size: .75rem; }
+.ops-status-action { grid-column: 2; color: var(--ops-blue); font-size: .72rem; font-weight: 700; }
+.ops-work-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(320px, .8fr); gap: 1.5rem; align-items: start; }
+.ops-map-panel, .ops-alert-panel { border: 1px solid var(--ops-border); border-radius: .8rem; background: white; padding: 1.25rem; }
+.ops-panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding-bottom: 1.1rem; }
+.ops-panel-heading h2 { margin: 0; font-size: 1.1rem; font-weight: 750; letter-spacing: -.02em; }
+.ops-panel-heading p { max-width: 36rem; font-size: .82rem !important; }
+.ops-text-button { display: inline-flex; align-items: center; gap: .3rem; border-radius: .35rem; color: var(--ops-blue); font-size: .78rem; font-weight: 700; white-space: nowrap; }
+.ops-text-button:hover { color: #124fb5; }
+.ops-map-panel > div:last-child { border-radius: .5rem !important; }
+.ops-incident-list { display: grid; gap: .55rem; }
+.ops-incident-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .7rem; width: 100%; border: 1px solid #e6eaf0; border-radius: .5rem; background: white; padding: .8rem; text-align: left; }
+.ops-incident-row:hover { border-color: #b7c9e7; background: #fbfdff; }
+.ops-incident-row strong, .ops-incident-row small { display: block; }
+.ops-incident-row strong { font-size: .8rem; }
+.ops-incident-row small { margin-top: .2rem; overflow: hidden; color: var(--ops-muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.ops-severity { border: 1px solid; border-radius: .25rem; padding: .2rem .38rem; font-size: .62rem; font-weight: 800; text-transform: uppercase; }
+.ops-alert-footer, .ops-empty { display: flex; align-items: center; gap: .55rem; margin-top: 1rem; border-top: 1px solid #edf0f3; padding-top: 1rem; color: var(--ops-muted); font-size: .75rem; }
+
+@media (max-width: 1023px) { .ops-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ops-work-grid { grid-template-columns: 1fr; } }
+@media (max-width: 639px) { .ops-overview { padding: 1.5rem 1rem 6rem; } .ops-intro { align-items: start; flex-direction: column; gap: 1.25rem; padding-bottom: 1.5rem; } .ops-status-grid { gap: .75rem; margin-bottom: 1.25rem; } .ops-status-card { min-height: 7.25rem; padding: .85rem; } .ops-status-icon { height: 2rem; width: 2rem; } .ops-status-card strong { font-size: .8rem; } .ops-status-card small { font-size: .68rem; } .ops-work-grid { gap: 1rem; } .ops-map-panel, .ops-alert-panel { padding: 1rem; } .ops-map-panel > div:last-child { min-height: 360px !important; } }
+
+@media (max-width: 639px) {
+  nav.fixed.bottom-0 { background: #ffffff !important; border-color: #d7dde5 !important; box-shadow: 0 -4px 16px rgba(16, 24, 40, .08); }
+  nav.fixed.bottom-0 button { gap: .22rem; border-radius: .45rem; color: #5f6b7a !important; }
+  nav.fixed.bottom-0 button.text-sky-400, nav.fixed.bottom-0 button.text-sky-400 svg { color: #175cd3 !important; }
+  nav.fixed.bottom-0 span { font-size: .62rem !important; font-weight: 650; }
+}
 
 /* Scoped light theme overrides - applied only when light mode is selected */
 html.light body .bg-slate-950,

@@ -15,7 +15,6 @@ import {
   CloudRain,
   FileText,
   ShieldAlert,
-  BarChart3,
   Lock,
 } from "lucide-react";
 
@@ -35,7 +34,7 @@ export function MobileNav() {
     { id: "overview", label: "Home", icon: LayoutDashboard },
     { id: "map", label: "Map", icon: Map },
     { id: "routes", label: "Routes", icon: GitFork },
-    { id: "field-reports", label: "Report", icon: FileText },
+    { id: "field-reports", label: "Live report", icon: FileText },
     { id: "alerts", label: "Alerts", icon: AlertTriangle },
   ];
 
@@ -44,14 +43,13 @@ export function MobileNav() {
     { id: "shipments", label: t.shipments, icon: Package },
     { id: "accessibility", label: t.accessibility, icon: Activity },
     { id: "weather", label: t.weather, icon: CloudRain },
-    { id: "analytics", label: t.analytics, icon: BarChart3 },
   ];
 
   return (
     <>
       {/* Mobile Drawer / Sheet for Extra Options */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-end bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="bg-slate-900 border-t border-slate-700 rounded-t-2xl p-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
               <div>
@@ -125,7 +123,7 @@ export function MobileNav() {
       )}
 
       {/* Persistent Bottom Tab Bar (Mobile only) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-slate-950/95 border-t border-slate-800 backdrop-blur-md px-2 py-1 flex items-center justify-around">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-slate-950/95 border-t border-slate-800 backdrop-blur-md px-2 py-1 flex items-center justify-around">
         {primaryTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
