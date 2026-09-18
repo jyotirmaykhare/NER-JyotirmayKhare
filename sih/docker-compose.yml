@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: sih-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: sih-backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MONGO_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongodb:27017/${MONGO_DB}?authSource=admin
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: sih-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    environment:
+      VITE_MAPS_API_KEY: ${VITE_MAPS_API_KEY}
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
+

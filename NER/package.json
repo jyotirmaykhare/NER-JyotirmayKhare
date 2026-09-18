@@ -1,0 +1,16 @@
+{
+  "name": "ner-lifeline",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AI-Powered Smart Logistics & Accessibility Platform for the North Eastern Region of India",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint",
+    "preview": "npm --prefix frontend run preview",
+    "backend": "uvicorn backend.main:app --reload --port 8000"
+  },
+  "workspaces": [
+    "frontend"
+  ]
+}

@@ -1,0 +1,254 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+  --card: #f9fafb;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #e5e7eb;
+  --secondary-foreground: #111827;
+  --muted: #e5e7eb;
+  --muted-foreground: #6b7280;
+  --accent: #e5e7eb;
+  --accent-foreground: #111827;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #d1d5db;
+  --input: #e5e7eb;
+  --ring: #2563eb;
+}
+
+body {
+  background-color: #ffffff;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Scoped light theme overrides - applied only when light mode is selected */
+html.light body .bg-slate-950,
+html.light body [class*="bg-slate-950/"] {
+  background-color: #f8fafc !important;
+}
+
+html.light body .bg-slate-900,
+html.light body [class*="bg-slate-900/"] {
+  background-color: #ffffff !important;
+}
+
+html.light body .bg-slate-800,
+html.light body [class*="bg-slate-800/"] {
+  background-color: #f1f5f9 !important;
+}
+
+html.light body .bg-slate-700,
+html.light body [class*="bg-slate-700/"] {
+  background-color: #e2e8f0 !important;
+}
+
+html.light body .border-slate-800,
+html.light body [class*="border-slate-800/"] {
+  border-color: #e2e8f0 !important;
+}
+
+html.light body .border-slate-700,
+html.light body [class*="border-slate-700/"] {
+  border-color: #cbd5e1 !important;
+}
+
+html.light body .border-slate-600,
+html.light body [class*="border-slate-600/"] {
+  border-color: #94a3b8 !important;
+}
+
+html.light body .text-slate-100,
+html.light body .text-slate-200,
+html.light body .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light body .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.light body .text-slate-500 {
+  color: #64748b !important;
+}
+
+html.light body .text-slate-600 {
+  color: #475569 !important;
+}
+
+html.light body .text-white {
+  color: #0f172a !important;
+}
+
+html.light body .bg-sky-500.text-white,
+html.light body .bg-sky-600.text-white,
+html.light body .bg-emerald-500.text-white,
+html.light body .bg-emerald-600.text-white,
+html.light body .bg-red-500.text-white,
+html.light body .bg-red-600.text-white,
+html.light body .bg-amber-500.text-white,
+html.light body .bg-amber-600.text-white,
+html.light body .bg-blue-500.text-white,
+html.light body .bg-blue-600.text-white,
+html.light body .bg-indigo-500.text-white,
+html.light body .bg-indigo-600.text-white {
+  color: #ffffff !important;
+}
+
+html.light body .bg-sky-500 .text-white,
+html.light body .bg-sky-600 .text-white,
+html.light body .bg-emerald-500 .text-white,
+html.light body .bg-emerald-600 .text-white,
+html.light body .bg-red-500 .text-white,
+html.light body .bg-red-600 .text-white,
+html.light body .bg-amber-500 .text-white,
+html.light body .bg-amber-600 .text-white,
+html.light body .bg-blue-500 .text-white,
+html.light body .bg-blue-600 .text-white,
+html.light body .bg-indigo-500 .text-white,
+html.light body .bg-indigo-600 .text-white {
+  color: #ffffff !important;
+}
+
+html.light body .hover\:bg-slate-800:hover,
+html.light body [class*="hover:bg-slate-800/"]:hover {
+  background-color: #e2e8f0 !important;
+}
+
+html.light body .hover\:bg-slate-900:hover,
+html.light body [class*="hover:bg-slate-900/"]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+html.light body .placeholder-slate-500::placeholder {
+  color: #64748b !important;
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Leaflet dark theme map enhancements */
+.leaflet-container {
+  background-color: #ffffff !important;
+  font-family: inherit !important;
+}
+
+.leaflet-tile {
+  filter: none !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.leaflet-bar {
+  border: 1px solid #334155 !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Pulse animation for high priority status */
+@keyframes beacon-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.pulse-beacon {
+  animation: beacon-pulse 2s infinite;
+}
+
+@keyframes green-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.pulse-green {
+  animation: green-pulse 2.2s infinite;
+}
+
+/* Camera scanline effect for simulated facial recognition */
+@keyframes scanline {
+  0% {
+    top: 5%;
+  }
+  50% {
+    top: 90%;
+  }
+  100% {
+    top: 5%;
+  }
+}
+
+.scan-laser {
+  animation: scanline 2.5s ease-in-out infinite;
+}
