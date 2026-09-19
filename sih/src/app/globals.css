@@ -336,6 +336,26 @@ html.light body .placeholder-slate-500::placeholder {
   color: #ffffff !important;
 }
 
+/* Prevent Leaflet's fallback white box from appearing behind custom markers. */
+.leaflet-div-icon.ner-map-marker {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.ner-map-marker > div {
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.ner-incident-marker > div {
+  box-shadow: 0 2px 9px rgba(127, 29, 29, .35);
+}
+
+.ner-weather-marker > div,
+.ner-emergency-marker > div {
+  box-shadow: 0 2px 9px rgba(15, 23, 42, .25);
+}
+
 /* Pulse animation for high priority status */
 @keyframes beacon-pulse {
   0% {

@@ -40,6 +40,9 @@ const backendOrigin = (
 ).replace(/\/+$/, "");
 
 const nextConfig: NextConfig = {
+  // The development toolbar overlaps the mobile navigation and looks like a
+  // broken floating control in screenshots. It is not part of the product UI.
+  devIndicators: false,
   async rewrites() {
     // `BACKEND_ENABLED=false` keeps the app fully self-contained (offline/preview mode).
     if (process.env.BACKEND_ENABLED === "false") {

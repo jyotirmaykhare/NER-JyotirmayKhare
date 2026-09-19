@@ -21,24 +21,29 @@ function isSevere(code?: number) { return [65, 75, 81, 82, 95, 96, 99].includes(
 
 export async function GET() {
   try {
-    const data = await Promise.all(WEATHER_STATIONS.map(async (station): Promise<WeatherData> => {
-      const params = new URLSearchParams({
-        latitude: String(station.coordinates[0]), longitude: String(station.coordinates[1]),
-        current: "temperature_2m,wind_speed_10m,weather_code", hourly: "precipitation",
-        past_hours: "24", forecast_hours: "1", timezone: "GMT",
-      });
-      const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { next: { revalidate: 600 } });
-      if (!response.ok) throw new Error(`Open-Meteo returned ${response.status}`);
-      const report = (await response.json()) as OpenMeteoResponse;
+    // Open-Meteo supports coordinate lists. One upstream request is materially
+    // more reliable than six simultaneous requests on a slow network drive.
+    const params = new URLSearchParams({
+      latitude: WEATHER_STATIONS.map((station) => station.coordinates[0]).join(","),
+      longitude: WEATHER_STATIONS.map((station) => station.coordinates[1]).join(","),
+      current: "temperature_2m,wind_speed_10m,weather_code", hourly: "precipitation",
+      past_hours: "24", forecast_hours: "1", timezone: "GMT",
+    });
+    const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { next: { revalidate: 600 } });
+    if (!response.ok) throw new Error(`Open-Meteo returned ${response.status}`);
+    const reports = (await response.json()) as OpenMeteoResponse[];
+    const data: WeatherData[] = WEATHER_STATIONS.map((station, index) => {
+      const report = reports[index];
+      if (!report) throw new Error("Open-Meteo returned an incomplete weather report.");
       const code = report.current?.weather_code;
       return {
         ...station,
-        rainfall24hMm: Number((report.hourly?.precipitation ?? []).reduce((sum, value) => sum + (value || 0), 0).toFixed(1)),
+        rainfall24hMm: Number((report.hourly?.precipitation ?? []).slice(0, 24).reduce((sum, value) => sum + (value || 0), 0).toFixed(1)),
         temperatureCelsius: Number((report.current?.temperature_2m ?? 0).toFixed(1)),
         windSpeedKmh: Number((report.current?.wind_speed_10m ?? 0).toFixed(1)),
         condition: weatherCondition(code), severeAlert: isSevere(code),
       };
-    }));
+    });
     return NextResponse.json({ success: true, data, source: "Open-Meteo forecast", updatedAt: new Date().toISOString() });
   } catch {
     return NextResponse.json({ success: false, error: "Live weather data is temporarily unavailable." }, { status: 502 });

@@ -219,12 +219,12 @@ export default function LeafletMap({
       const iconColor = isDamaged ? "#ef4444" : isDue ? "#f59e0b" : "#10b981";
 
       const customIcon = L.divIcon({
-        className: "custom-bridge-icon",
+        className: "ner-map-marker ner-bridge-marker",
         html: `
-          <div style="background-color: ${iconColor}; width: 14px; height: 14px; border: 2px solid #ffffff; border-radius: 2px;" title="${bridge.name}"></div>
+          <div style="background-color: ${iconColor}; width: 18px; height: 18px; border: 2px solid #ffffff; border-radius: 5px; box-shadow: 0 2px 8px rgba(15,23,42,.35);" title="${bridge.name}"></div>
         `,
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
+        iconSize: [18, 18],
+        iconAnchor: [9, 9],
       });
 
       const marker = L.marker(bridge.coordinates, { icon: customIcon });
@@ -267,15 +267,13 @@ export default function LeafletMap({
       const isDelayed = vehicle.status === "delayed";
       const isStopped = vehicle.status === "stopped";
 
-      const badgeColor = isDelayed ? "bg-amber-500" : isStopped ? "bg-slate-500" : "bg-emerald-500";
-
       const customIcon = L.divIcon({
-        className: "custom-vehicle-marker",
+        className: "ner-map-marker ner-vehicle-marker",
         html: `
           <div style="display: flex; align-items: center; justify-content: center; position: relative;">
-            <div style="background: #ffffff; border: 2px solid ${isDelayed ? '#b45309' : '#18794e'}; border-radius: 3px; padding: 2px 5px; display: flex; align-items: center; gap: 3px;">
-              <span style="width: 7px; height: 7px; border-radius: 50%;" class="${badgeColor}"></span>
-              <span style="color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: -0.2px;">${vehicle.plateNumber}</span>
+            <div style="background: #ffffff; border: 2px solid ${isDelayed ? '#b45309' : isStopped ? '#64748b' : '#18794e'}; border-radius: 6px; padding: 3px 6px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(15,23,42,.25);">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: ${isDelayed ? '#f59e0b' : isStopped ? '#64748b' : '#10b981'};"></span>
+              <span style="color: #0f172a; font-size: 10px; font-weight: 800; letter-spacing: -0.2px;">${vehicle.plateNumber}</span>
             </div>
           </div>
         `,
@@ -329,12 +327,12 @@ export default function LeafletMap({
       const isCritical = incident.severity === "Critical";
 
       const customIcon = L.divIcon({
-        className: "custom-incident-marker",
+        className: "ner-map-marker ner-incident-marker",
         html: `
           <div style="display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: ${
             isCritical ? "#ef4444" : "#f97316"
           }; border: 2px solid #ffffff;">
-            <span style="color: #ffffff; font-size: 12px; font-weight: 900;">!</span>
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #ffffff;"></span>
           </div>
         `,
         iconSize: [26, 26],
@@ -386,7 +384,7 @@ export default function LeafletMap({
 
     weatherStations.forEach((wx) => {
       const customIcon = L.divIcon({
-        className: "custom-weather-marker",
+        className: "ner-map-marker ner-weather-marker",
         html: `
           <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid #38bdf8; border-radius: 20px; padding: 2px 7px; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
             <span style="font-size: 11px;">🌧️</span>
@@ -437,7 +435,7 @@ export default function LeafletMap({
           : "🚜";
 
       const customIcon = L.divIcon({
-        className: "custom-emergency-res",
+        className: "ner-map-marker ner-emergency-marker",
         html: `
           <div style="background: ${isDeployed ? "#0284c7" : "#0f172a"}; border: 2px solid #38bdf8; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(2,132,199,0.7);" class="${
             isDeployed ? "pulse-green" : ""
