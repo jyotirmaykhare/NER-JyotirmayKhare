@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useApp } from "@/context/AppContext";
-import { searchGoogleMapsPlaces, GoogleMapPlace } from "@/lib/googleMapsApi";
+import { GoogleMapPlace } from "@/lib/googleMapsApi";
 import {
   Coffee,
   Fuel,
@@ -35,6 +35,7 @@ export function GoogleMapsPlacesModal({
   const [places, setPlaces] = useState<GoogleMapPlace[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<GoogleMapPlace | null>(null);
+  const [error, setError] = useState("");
 
   const categories = [
     { label: "Coffee & Diner", query: "Coffee", icon: Coffee },
@@ -44,11 +45,16 @@ export function GoogleMapsPlacesModal({
 
   const handleSearch = async (searchQuery: string) => {
     setLoading(true);
+    setError("");
     try {
-      const results = await searchGoogleMapsPlaces(searchQuery);
-      setPlaces(results);
-    } catch {
-      // Fallback
+      const params = new URLSearchParams({ q: searchQuery, lat: "26.2", lng: "92.9" });
+      const response = await fetch(`/api/places?${params}`);
+      const payload = (await response.json()) as { places?: GoogleMapPlace[]; error?: string };
+      if (!response.ok) throw new Error(payload.error || "Google Maps Places is unavailable.");
+      setPlaces(payload.places || []);
+    } catch (cause) {
+      setPlaces([]);
+      setError(cause instanceof Error ? cause.message : "Google Maps Places is unavailable.");
     } finally {
       setLoading(false);
     }
@@ -93,13 +99,13 @@ export function GoogleMapsPlacesModal({
             </div>
             <div>
               <div className="font-extrabold text-sm sm:text-base text-white flex items-center gap-2">
-                <span>Google Maps Highway Amenities</span>
+                <span>Google Maps Nearby Amenities</span>
                 <span className="text-[10px] uppercase font-bold px-1.5 py-0.2 bg-slate-800 text-emerald-400 rounded border border-slate-700">
-                  SerpApi Engine
+                  Live Places
                 </span>
               </div>
               <div className="text-[11px] text-slate-400">
-                Find driver rest stops, coffee, 24x7 fuel pumps, and trauma clinics along NER routes
+                Live results from Google Maps Places near the selected NER corridor
               </div>
             </div>
           </div>
@@ -164,6 +170,7 @@ export function GoogleMapsPlacesModal({
 
         {/* Places List (Ultra user-friendly card layout) */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {error && <div className="p-3 rounded-lg border border-amber-700/60 bg-amber-950/30 text-xs text-amber-100">{error}</div>}
           {places.length === 0 && !loading && (
             <div className="text-center py-12 text-slate-500 text-xs">
               No amenities found for &ldquo;{query}&rdquo;. Try searching &ldquo;Coffee&rdquo; or &ldquo;Fuel&rdquo;.
@@ -234,7 +241,7 @@ export function GoogleMapsPlacesModal({
 
         {/* Footer info */}
         <div className="p-3 border-t border-slate-800 bg-slate-900/50 flex items-center justify-between text-[11px] text-slate-500">
-          <span>Powered by Google Maps engine via SerpApi query integration</span>
+          <span>Live results supplied by Google Maps Places</span>
           <span className="font-mono">Lat: 26.2°N • Lng: 92.9°E</span>
         </div>
       </div>

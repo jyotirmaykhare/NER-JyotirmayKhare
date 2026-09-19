@@ -127,12 +127,6 @@ export interface WeatherData {
   windSpeedKmh: number;
   condition: string;
   severeAlert: boolean;
-  riskChain: {
-    rainfall: string;
-    landslideRisk: string;
-    roadAccessibility: string;
-    deliveryDelay: string;
-  };
 }
 
 export interface EmergencyResource {

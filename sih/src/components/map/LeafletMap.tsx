@@ -3,9 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import { useApp } from "@/context/AppContext";
-import { Road, Vehicle, Incident } from "@/types";
+import { Road, Vehicle, Incident, WeatherData } from "@/types";
 import { MOCK_BRIDGES } from "@/data/bridges";
-import { MOCK_WEATHER } from "@/data/weather";
 import { Layers, ZoomIn, ZoomOut, Compass, AlertTriangle, Truck } from "lucide-react";
 
 interface LeafletMapProps {
@@ -57,6 +56,20 @@ export default function LeafletMap({
   });
 
   const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const [weatherStations, setWeatherStations] = useState<WeatherData[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    void fetch("/api/weather", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) return [];
+        const payload = (await response.json()) as { data?: WeatherData[] };
+        return payload.data || [];
+      })
+      .then((data) => { if (active) setWeatherStations(data); })
+      .catch(() => { if (active) setWeatherStations([]); });
+    return () => { active = false; };
+  }, []);
 
   // Initialize Map
   useEffect(() => {
@@ -371,7 +384,7 @@ export default function LeafletMap({
 
     if (!layers.weather) return;
 
-    MOCK_WEATHER.forEach((wx) => {
+    weatherStations.forEach((wx) => {
       const customIcon = L.divIcon({
         className: "custom-weather-marker",
         html: `
@@ -394,10 +407,7 @@ export default function LeafletMap({
             <div>24h Rain: <span class="text-white font-bold">${wx.rainfall24hMm} mm</span></div>
             <div>Temp: <span class="text-white">${wx.temperatureCelsius}°C</span></div>
             <div>Wind: <span class="text-white">${wx.windSpeedKmh} km/h</span></div>
-            <div>Alert: <span class="text-red-400 font-bold">${wx.severeAlert ? "ACTIVE" : "NONE"}</span></div>
-          </div>
-          <div class="text-[10px] text-slate-400 p-1.5 rounded bg-slate-900 border border-slate-700">
-            <span class="font-semibold text-amber-300">Cascading Risk:</span> ${wx.riskChain.deliveryDelay}
+            <div>Condition: <span class="text-white">${wx.condition}</span></div>
           </div>
         </div>
       `;
@@ -405,7 +415,7 @@ export default function LeafletMap({
       marker.bindPopup(popupHtml);
       group.addLayer(marker);
     });
-  }, [layers.weather]);
+  }, [layers.weather, weatherStations]);
 
   // Update Emergency Deployment Layer
   useEffect(() => {
